@@ -1,0 +1,251 @@
+<html>
+<head>
+<script src="js/jquery.min.js"></script>
+<!-- <script src="js/FileSaver.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+<script src="js/dom-to-image/src/dom-to-image.js"></script>
+<script src="js/jspdf.umd.min.js"></script>
+<script src="js/base64.js"></script>
+  
+</head>
+<body>
+  <input type="button" onclick="downloadPdf()" id="btn" value="do it" />
+  <h4>两行三列：</h4>
+  <div style="width: 1400px;height: 800px" id="exportAll">
+
+  </div>
+  <script type="text/javascript">  
+    var draw = SVG().size("100%", "100%").addTo("#exportAll")
+
+    let image2 = draw
+		.image(`image/周文博.png`,100,100)
+		.move(100,100)
+		.stroke({
+			width: 1,
+			color: 'blue'
+		}).size(100, 100);
+
+    let image3 = draw
+		.image(`image/1.svg`,15,15)
+		.move(200,200)
+		.stroke({
+			width: 1,
+			color: 'blue'
+		}).size(15, 15);
+
+
+
+
+
+    $(function() {
+ 
+ //以下三种方式的生成都可以，第三个params是svg和canvas的混合生成，第三种方式也可以加更多
+ var params = [{select:'#exportAll', type:'svg'}];
+//  var params = [{select:'#canvas_circos', type:'canvas'}];
+//  var params = [{select:'#sgchart', type:'svg'}, {select:'#canvas_circos', type:'canvas'}];
+
+ //生成   type可以为pdf,png,jpg
+
+
+})
+
+var b  = new Base64();
+var generateImage2 = {
+ /**
+  * 生成
+  *
+  * @param    array
+  * @param    object
+  *
+  **/
+ generate:function(params, to) {
+     var result = this.checkParams(params, to);
+
+     if (false === result) {
+         return false;
+     }
+
+     this.executeGenerate(params, to);
+ },
+ /**
+  * 参数检查
+  *
+  * @param    源头
+  * @param    目标
+  *
+  **/
+ checkParams:function(params, to) {
+     var types = {canvas:'', svg:''};
+     var to_types = {png:'',jpg:'',pdf:''};
+
+     if(!Array.isArray(params)) {
+         alert('调用的第一个参数(params)需要是数组切不能为空');
+         return false;
+     }
+
+     if (params.length == 0) {
+         alert('params参数不能为空');
+         return false;
+     }
+     for (var i in params) {
+         if (typeof(params[i]) != 'object' || Array.isArray(params[i])) {
+             alert('params里面的参数应为对象');
+             return false;
+         }
+         if (typeof(params[i]['select']) == 'undefined') {
+             alert('params中缺少key:  select,该值主要标记需要生成哪个ID的节点');
+             return false;
+         }
+         if (typeof(params[i]['type']) == 'undefined') {
+             alert('params中缺少key: type,该值告诉需要取该ID下的svg/canvas');
+             return false;
+         }
+
+         if (typeof(types[params[i].type]) == 'undefined') {
+             alert('type节点只支持 svg或者canvas');
+             return false;
+         }
+
+         if ($(params[i].select).length < 1) {
+             alert(params[i].select+' 该ID没有找对对应的dom节点');
+             return false;
+         }
+         
+         if ($(params[i].select).find(params[i].type).length < 1) {
+             alert(params[i].select+' ID下不存在'+params[i].type+'节点');
+             return false;
+         }
+
+     }
+
+     if (typeof(to) != 'object' || Array.isArray(to)) {
+         alert('第二个参数必须是对象{}');
+         return false;
+     }
+
+     if (typeof(to.width) == 'undefined') {
+         alert('第二个参数缺少key: width');
+         return false;
+     }
+
+     if (typeof(to.height) == 'undefined') {
+         alert('第二个参数缺少key: height');
+     }
+
+     if (typeof(to.width) != 'number') {
+         alert('第二个参数的width的类型必须为int');
+         return false;
+     }
+
+     if (typeof(to.height) != 'number') {
+         alert('第二个参数的height的类型必须为int');
+         return false;
+     }
+
+     if (typeof(to.type) == 'undefined') {
+         alert('第二个参数缺少key: type, 例如(pdf/jpg/png)');
+     }
+
+     if (typeof(to_types[to.type]) == 'undefined') {
+         alert('type节点只支持 png、jpg、pdf');
+         return false;
+     }
+
+     return true;
+ },
+ /**
+  * 执行生成
+  *
+  * @param    源头
+  * @param    目标
+  *
+  **/
+ executeGenerate:function(params, to) {
+     var download_types = {pdf:'downloadPdf', png:'downloadImage', jpg:'downloadImage'};
+
+     var origin_obj = [];
+     var image = new Image();
+     //这个src必须要有,且是真实的,否则不会执行image.onload
+     image.src = 'data:image/svg+xml;base64,'+ b.encode('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" style="font-size: 12px; font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, Arial, Helvetica, sans-serif;"></svg>');
+
+     for (var i in params) {
+         var obj;
+         if (params[i].type == 'svg') {
+             var svg   = $(params[i].select).find('svg').prop("outerHTML");
+             image.src = 'data:image/svg+xml;base64,'+ b.encode(svg);
+             obj = image;
+         } else if (params[i].type == 'canvas') {
+             var canvas = $(params[i].select).find('canvas')[0];
+             obj = canvas;
+         }
+
+         var top    = parseFloat($(params[i].select).css('top'));
+         var left   = parseFloat($(params[i].select).css('left'));
+
+         origin_obj.push({'target':obj, 'top':top,'left':left});
+     }
+
+     
+
+     $('body').append('<canvas id="to_canvas" width="'+to.width+'" height="'+to.height+'" style="display:none"></canvas>');
+
+     var obj = this;
+     var to_canvas = $('#to_canvas')[0];
+     var to_context = to_canvas.getContext("2d");
+     //自动给待生成的图片填充白色背景
+     to_context.fillStyle="#ffffff";
+     to_context.fillRect(0,0,to.width,to.height);
+
+     image.onload=function() {
+         for (var i in origin_obj) {
+             to_context.drawImage(origin_obj[i]['target'],origin_obj[i]['left'],origin_obj[i]['top'], to.width, to.height);
+         }
+
+         var download_type = typeof(to.type)!= 'undefined' ? to.type : 'png';
+
+         download_params = {'name':'测试', type: download_type, 'obj':to_canvas, width:to.width, height:to.height};
+         eval("obj."+download_types[download_type]+"(download_params)");
+     };
+
+     
+ },
+ print:function(obj) {
+     var nhtml = $(obj).prop('outerHTML');
+     document.body.innerHTML = '<style>@page {margin: 10px;}</style>' + nhtml;
+     window.print();
+     //window.location.reload();
+     return false;
+ },
+ /**
+  * 下载图片
+  *
+  **/
+ downloadImage:function(params) {
+     var image_types = {
+         'jpg':'image/jpg',
+         'png':'image/png',
+     };
+
+     //传参示例 params = {'name':'测试', type:'png', 'obj':to_canvas};
+     var target = params['obj'].toDataURL(image_types[params.type]);
+     var a = document.createElement("a");
+     a.download = name;
+     a.href = target;
+     document.body.appendChild(a);
+     a.click();
+     setTimeout(function(){ a.remove(); }, 1000);
+ },
+ /**
+  * 下载pdf
+  *
+  **/
+ downloadPdf:function(params) {
+     var pdf = new jsPDF('p', 'pt', 'b4');
+     pdf.addImage(params.obj,'PNG', 0, 0, params.width, params.height);
+     pdf.save(params.name+'.pdf');
+ }
+};
+generateImage2.generate(params,{width:700,height:700, type:'png'});
+  </script>
+</body>
+</html>

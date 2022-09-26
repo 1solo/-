@@ -1,0 +1,21 @@
+{
+  "name": "hs_project_report",
+  "description": "report",
+  "main": "index.js",
+  "keywords": [
+    "rd.123456"
+  ],
+  "authors": [
+    "zwb"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

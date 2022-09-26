@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<!-- <link href="../hs_project_report/css/bootstrap.min.css" rel="stylesheet" /> -->
+	<!-- <link href="../hs_project_report/css/bootstrap-select.min.css" rel="stylesheet" /> -->
+	<!--<link href="css/layui.css" rel="stylesheet" /> -->
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+	<link href="css/bootstrap-select.css" rel="stylesheet" />
+	<!-- <link href="css/zane-calendar.min.css" rel="stylesheet" /> -->
+	<!--<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" />-->
+    <title>报表</title>
+    <!-- <script src="../hs_project_report/js/jquery-3.6.0.min.js"></script> -->
+	<!-- <script src="../hs_project_report/js/bootstrap.min.js"></script> -->
+	<!-- <script src="../hs_project_report/js/bootstrap-select.min.js"></script> -->
+	
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/bootstrap-select.js"></script>
+	<script src="js/defaults-zh_CN.js"></script>
+	<script src="js/zane-calendar.min.js"></script>
+	<script src="js/bootstrap-datetimepicker.min.js"></script>
+	<script src="js/FileSaver.min.js"></script>
+	
+	
+	
+	<script src="js/dom-to-image/src/dom-to-image.js"></script>
+	<script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+	<script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <style type="text/css">
+       .body{
+        display: flex;
+       }
+	   /* .body2{
+        display: flex;
+		float:
+       } */
+       .headers{
+        display: flex;
+       }
+	   .headers2{
+        display: flex;
+		float: left;
+       }
+       .headfix{
+        width: 200px;
+        height: 60px;
+		border:1px solid #000;
+       }
+       .head-view{
+        width: 1400px;
+        height: 60px;
+        overflow: scroll;
+        overflow-x: hidden;
+        overflow-y: hidden;
+       }
+       .head{
+        width: 3000px;
+        height: 60px;
+		background-color : #fff;
+       }
+	   .year{
+        display: flex;
+        width: 3000px;
+        height: 30px;
+       }
+	   .month{
+        display: flex;
+        width: 3000px;
+        height: 30px;
+       }
+
+       .tab-view{
+        overflow: scroll;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        height: 700px;
+        width: 200px;
+       }
+       .tab{
+        height: 3000px;
+        width: 200px;
+		background-color : #fff;
+       }
+       .main-view{
+        width: 1400px;
+        height: 700px;
+        /* overflow-x: auto;
+        overflow-y: auto; */
+        overflow: scroll;
+       }
+       .main{
+        width: 3000px;
+        height: 3000px;
+		background-color : #fff;
+       }
+	   .box{
+        width: 3px;
+        height: 100%;
+        background-color:blue;
+        position: absolute;
+        left: 250px;
+        top: 0;
+		cursor:pointer;
+        }
+
+    </style>
+  </head>
+  <body style="font-family: 'Microsoft YaHei'">
+	<div class="box"></div>
+    <div id="viewall" style="background-color: #fff">
+		<div>
+			<select id="select" class="selectpicker" data-live-search="true" onchange="selectOnchang(this)">
+				                         
+			</select>
+			<select id="select2" class="selectpicker" multiple data-live-search="true" data-actions-box="true">
+				                         
+			</select>
+			<button onclick="query()">查询</button>
+			<button onclick="exportImage()">导出</button>
+		</div>
+		<div id="exportAll" style="background-color: #fff">
+        <div id="hall" class="headers">
+            <div id="hf" class="headfix" style="vertical-align: middle; text-align: center;">
+				<span style="line-height: 60px;">项目计划报表</span>
+			</div>
+            <div id="hv" class="head-view">
+                <div id="h" class="head">
+					<div id="yearid" class="year" ></div>
+					<div id="monthid" class="month" ></div>
+					<!-- <div id="dayid" class="day" ></div> -->
+				</div>
+            </div>
+        </div>
+        <div class="body">
+            <div id="tv" class="tab-view">
+                <div id="t" class="tab"></div>
+            </div>
+            <div id="mv" class="main-view">
+                <div id="m" class="main">
+                    
+                </div>
+            </div>
+        </div>
+		</div>
+    </div>
+	<!-- <div id="exportAll"> -->
+			<!-- <div id="exportHead" class="headers2"> -->
+			<!-- </div> -->
+			<!-- <div id = "exportbody" class="body"> -->
+			<!-- </div> -->
+		<!-- </div> -->
+	
+	<script >
+	
+	</script>
+	
+    <script>
+	// <!-- var draw = SVG().size("100%", "100%").addTo("#m") -->
+	// <!-- var domtoimage = require('dom-to-image'); -->
+	// <!-- SVG.on(document, 'DOMContentLoaded', function() { -->
+	// 	<!-- var draw = SVG().addTo('#m').size("100%", "100%") -->
+	// <!-- }) -->
+	let imageWidth = 15;
+	let textSize = 12;
+	function exportImage(){
+		let hWidth = $('#h').width();
+		let mWidth = $('#m').width();
+		let mHeigth = $('#m').height();
+		let tHeigth = $('#t').height();
+		$('#hv').width(hWidth);
+		$('#hv').removeAttr("class");
+		$('#mv').width(mWidth);
+		$('#mv').height(mHeigth);
+		$('#mv').removeAttr("class");
+		$('#tv').height(tHeigth);
+		$('#tv').removeAttr("class");
+		$('#tv').css({'padding-top':'60px'});
+		$('#hall').css({'position':'absolute'});
+		domtoimage.toPng(document.getElementById('exportAll'), { quality: 0.95 })
+		.then(function (dataUrl) {
+			var link = document.createElement('a');
+			link.download = 'my-image-name.png';
+			link.href = dataUrl;
+			link.click();
+			window.location.reload()
+		});
+// 		<!-- domtoimage.toBlob(document.getElementById('exportAll')) -->
+// 			<!-- .then(function (blob) { -->
+// 				<!-- window.saveAs(blob, 'my-node.png'); -->
+// 			<!-- }); -->
+// 			        <!-- domtoimage.toPng(document.getElementById('exportAll')) -->
+// 				<!-- .then(function (dataUrl) { -->
+// 					<!-- var img = new Image(); -->
+// 					<!-- img.src = dataUrl; -->
+// 					<!-- document.body.appendChild(img); -->
+// 					<!-- var a=document.createElement('a') -->
+// 					<!-- a.setAttribute('href',dataUrl) -->
+// 					<!-- a.setAttribute('download',"1.png") -->
+// 					<!-- a.click() -->
+// 				<!-- }) -->
+// 				<!-- .catch(function (error) { -->
+// 					<!-- console.error('转图片失败!', error); -->
+// 				<!-- }); -->
+				
+// 				<!-- html2canvas(document.body,{}).then(function(canvas) { -->
+// 					<!-- var imgUrl = canvas.toDataURL(); -->
+// 					<!-- window.saveAs(imgUrl, 'my-node.png'); -->
+// 					<!-- //imgUrl即为图片的base64形式 -->
+// 					<!-- <!-- window.location.reload() --> -->
+// 				<!-- }); -->
+				
+// 				<!-- let node = document.querySelector('svg'); -->
+// 				<!-- let name = 'image'; -->
+// 				<!-- let width = $('#m').width(); -->
+// 				<!-- let height = $('#m').height(); -->
+// 				<!-- let type = 'png'; -->
+				
+// 				<!-- let serializer = new XMLSerializer() -->
+
+//   <!-- let source = '<?xml version="1.0" standalone="no"?>\r\n' + serializer.serializeToString(node) -->
+
+//   <!-- let image = new Image() -->
+
+//   <!-- image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source) -->
+
+//   <!-- let canvas = document.createElement('canvas') -->
+
+//   <!-- canvas.width = width -->
+
+//   <!-- canvas.height = height -->
+
+//   <!-- let context = canvas.getContext('2d') -->
+
+//   <!-- context.fillStyle = '#fff' -->
+
+//   <!-- context.fillRect(0, 0, 10000, 10000) -->
+
+//   <!-- image.onload = function () { -->
+
+//     <!-- context.drawImage(image, 0, 0) -->
+
+//     <!-- let a = document.createElement('a') -->
+
+//     <!-- a.download = `${name}.${type}` -->
+
+//     <!-- a.href = canvas.toDataURL(`image/${type}`) -->
+
+//     <!-- a.click() -->
+
+
+	}
+	function selectTimeEvent(event) {
+
+                                                var dateField = document.getElementById(event.id);
+                                                // <!-- code marker for DateField2 -->
+                                                // <!-- code marker start -->
+                                                const datePattern = 'short_date';
+                                                var pattern = top.aras.getDotNetDatePattern(datePattern);
+                                                if (!pattern) {
+                                                    pattern = "";
+                                                }
+
+                                                // <!-- code marker end -->
+                                                const wndRect = top.aras.uiGetElementCoordinates(dateField);
+                                                const topWnd = top.aras.getMostTopWindowWithAras(window);
+                                                const dialogOptions = {
+                                                    left: wndRect.left - wndRect.screenLeft,
+                                                    top: wndRect.top - wndRect.screenTop,
+                                                    withTime: datePattern.endsWith('date_time'),
+                                                    validate: (value)=>{
+                                                        if (!window.validateFieldValueByPropEvent) {
+                                                            return {
+                                                                valid: true
+                                                            };
+                                                        }
+                                                        ;return window.validateFieldValueByPropEvent("dpt_estimated_implement_date", value);
+                                                    }
+                                                };
+         
+
+												const dialogPromise = topWnd.ArasCore.Dialogs.datePicker(dialogOptions);
+                                                dialogPromise.then(({result})=>{
+                                                    if (result !== undefined) {
+                                                        result = top.aras.convertFromNeutral(result, 'date', pattern);
+                                                        var prevVal = dateField.value;
+														let dateTime = result;
+														let y = document.getElementById(`${event.id}`).y.animVal.value;
+														let name = document.getElementById(`${event.id.substring(0,event.id.lastIndexOf('image'))}name`).innerHTML.split('>')[1].split('<')[0];
+														let date = document.getElementById(`${event.id.substring(0,event.id.lastIndexOf('image'))}date`).innerHTML.split('>')[1].split('<')[0];
+														let image = document.getElementById(`${event.id}`).getAttribute('href');
+														let longValue =  document.getElementById(`${event.id}`).width.animVal.value;
+														let yearNum = document.getElementById('yearid').children.length;//年数
+														let yearEst = null;//第几年
+														for(let i = 0 ;i<yearNum;i++){
+															if(document.getElementById('yearid').children[i].id==dateTime.split('/')[0]){
+																yearEst = i;
+															}
+														}
+														if(yearEst == null){
+															top.aras.AlertError("所选时间超过当前项目时间的范围");
+															return false;
+														}
+														let month = dateTime.split('/')[1];
+														let day = dateTime.split('/')[2];
+														let x = 600*yearEst + 50*(month-1)+50/30*day-5;
+														document.getElementById(`${event.id}`).remove();
+														document.getElementById(`${event.id.substring(0,event.id.lastIndexOf('image'))}date`).remove();
+														document.getElementById(`${event.id.substring(0,event.id.lastIndexOf('image'))}name`).remove();
+														// <!-- let draw2 = SVG().size("100%", "100%").addTo("#m"); -->
+														if(longValue!=imageWidth){
+															// <!-- let is_tilt = 0; -->
+															// <!-- for(let i = 0 ;i<relatedArray.length;i++){ -->
+															// 	<!-- if(Math.abs((new Date(relatedArray[i].startTime).getTime()-new Date(actStartTime).getTime())/(24*3600*1000))<=60){ -->
+															// 		<!-- is_tilt = -45; -->
+															// 	<!-- } -->
+															// <!-- } -->
+															let longw = longValue;
+															let longx = x;
+															//名称
+															var text3 = SVG.find('svg')
+															.text(`${name}`)
+															.font({
+																size: textSize,
+															})
+															.move(longx,y-imageWidth)
+															.attr({'id':`${event.id.substring(0,event.id.lastIndexOf('image'))}name`})
+															// <!-- .rotate(is_tilt,longx,y-13) -->
+															.fill("#ffffff")
+															.stroke({ width: 0.4, color: "#000" });
+											
+															//图片
+															
+															var group3 = SVG.find('svg')
+															.group()
+															.attr({'vector-effect': 'non-scaling-stroke'});
+															
+															
+															var image3 = SVG.find('svg')
+															.image(`${image}`,longw,imageWidth)
+															.move(longx,y)
+											.attr({ 'preserveAspectRatio': 'none','vector-effect': 'non-scaling-stroke','id':`${event.id}`,'value':`${longw}`,'onclick':'selectTimeEvent(this)'})
+															.stroke({
+																width: 1,
+																color: 'blue'
+															}).size(longw, imageWidth);
+															
+															// <!-- group3.add(image3); -->
+														
+															
+															//日期
+															var date3 = SVG.find('svg')
+															.text(`${dateTime}`)
+															.font({
+																size: textSize,
+															})
+															.move(longx,y+imageWidth)
+															.attr({'id':`${event.id.substring(0,event.id.lastIndexOf('image'))}date`})
+															.fill("#ffffff")
+															.stroke({ width: 0.6, color: "#000" });
+														}else{
+															//名称
+															let text2 = SVG.find('svg')
+															.text(`${name}`)
+															.font({
+																size: textSize,
+															})
+															.move(x,y-imageWidth)
+															.attr({'id':`${event.id.substring(0,event.id.lastIndexOf('image'))}name`})
+															// <!-- .rotate(is_tilt,x,y-13) -->
+															.fill("#ffffff")
+															.stroke({ width: 0.6, color: "#000" });
+															
+															//图片
+															let image2 = SVG.find('svg')
+															.image(`${image}`,imageWidth,imageWidth)
+															.move(x,y)
+															.attr({'preserveAspectRatio': 'none','vector-effect': 'non-scaling-stroke','id':`${event.id}`,'onclick':'selectTimeEvent(this)'})
+															.stroke({
+																width: 1,
+																color: 'blue'
+															}).size(imageWidth, imageWidth);
+															
+															
+															//日期
+															let date2 = SVG.find('svg')
+															.text(`${dateTime}`)
+															.font({
+																size: textSize,
+															})
+															.move(x,y+imageWidth)
+															.attr({'id':`${event.id.substring(0,event.id.lastIndexOf('image'))}date`})
+															.fill("#ffffff")
+															.stroke({ width: 0.6, color: "#000" });
+														}
+														
+														
+                                                        dateField.value = result;
+                                                        if (prevVal != dateField.value) {
+                                                            if (window.handleItemChange) {
+                                                                handleItemChange("dpt_estimated_implement_date", dateField.value, "date", pattern);
+                                                            }
+                                                            const changeEvent = new CustomEvent('change');
+                                                            dateField.dispatchEvent(changeEvent);
+                                                        }
+                                                    }
+                                                }
+                                                );
+
+                                            }
+
+
+	function _x(STR_XPATH) {
+		var xresult = document.evaluate(STR_XPATH, document, null, XPathResult.ANY_TYPE, null);
+		var xnodes = [];
+		var xres;
+		while (xres = xresult.iterateNext()) {
+			xnodes.push(xres);
+		}
+	
+		return xnodes;
+	}
+	
+	function selectOnchang(obj){ 
+		//alert(obj.selectedIndex);
+		
+		let selectValue = $('#select').val();
+		$('#select2').val(null);
+		init(selectValue);
+	}
+	function query(){ 
+		let selectValue = $('#select').val();
+		let selectValue2 = $('#select2').val();
+		if(selectValue2==null){
+			selectValue2 = undefined;
+		}else{
+			selectValue2 = $('#select2').val().join(',');
+		}
+		init(selectValue,selectValue2);
+	}
+	
+	let init = function(projectID,wbsEventID){
+	debugger;
+	
+        $('#t').children().remove();
+		$('#yearid').children().remove();
+		$('#monthid').children().remove();
+		$('#m').children().remove();
+		var draw = SVG().size("100%", "100%").addTo("#m")
+		if(wbsEventID==undefined){
+			$('#select2').children().remove();
+		}
+		let inn = top.aras.newIOMInnovator();
+		let wbsIdList = null;
+		
+		let selectSQL =  " select id,name from innovator.project where from_template = '41CFF7F63C84422AAA656A804A957779' ";
+		let selectItems = inn.applyMethod("hs_applySQL", "<sql>" + selectSQL + "</sql>");
+		let id = null;
+		if(projectID == undefined){
+			id = selectItems.getItemByIndex(0).getProperty("id","")
+		}else{
+			id = projectID;
+		}
+		
+		for(let z=0;z<selectItems.getItemCount();z++){
+			let selectItem = selectItems.getItemByIndex(z);
+			$('#select').append(`<option value = "${selectItem.getProperty("id","")}">${selectItem.getProperty("name","无名称")}</option>`);
+		}
+        // <!-- let id = "ECA251E2350244C7AB0BAA95AD96EA7C"; -->
+		
+		let PTree = inn.newItem("SQL", "SQL PROCESS");
+            PTree.setProperty("name", "hs_testProjectReport");
+            PTree.setProperty("PROCESS", "CALL");
+            PTree.setProperty("ARG1", id);
+            PTree = PTree.apply();
+			
+			var url = top.aras.getInnovatorUrl();
+            var db = top.aras.getDatabase();
+			//加入文件对象
+            var formData = new FormData();
+            formData.append("url", url);
+            formData.append("db", db);
+            formData.append("id", id);
+			
+			let sortList = null;
+			
+			$.ajax({
+                url: "http://"+ top.window.document.domain +"/DfSortProject/IE/hs_ProjectReport",
+                data: formData,
+                type: "Post",
+                dataType: "json",
+                async: false,
+                cache: false, //上传文件无需缓存
+                processData: false, //用于对data参数进行序列化处理 这里必须false
+                contentType: false, //必须
+                beforeSend: function (xhr) {
+                },
+                success: function (json) {
+                    debugger;
+                    if (json.code!=500) {
+						sortList = json;
+                    }
+                    else {
+                        top.aras.AlertError(json.result);
+                    }
+                }
+            })
+        let sql2 = ` select date_due_sched,date_start_sched from innovator.project where id = '${id}' `;
+		// <!-- let projectItem = inn.getItemById("Project Template", id); -->
+        let projectItem = inn.applyMethod("hs_applySQL", "<sql>" + sql2 + "</sql>");
+        let date_due_sched = projectItem.getProperty("date_due_sched"); 
+        let date_start_sched = projectItem.getProperty("date_start_sched"); 
+		let wbscount = null;
+		if(wbsEventID!=undefined){
+			wbsIdList = wbsEventID.split(',');
+			// <!-- wbscount = wbsIdList.length; -->
+		}
+		
+		
+		// <!-- else{ -->
+		wbscount = PTree.getItemByIndex(0).getProperty("wbscount","");
+		// <!-- } -->
+        let actcount = PTree.getItemByIndex(0).getProperty("actcount","");
+        
+
+        // let tabBarView = document.getElementById("t");
+        // tabBarView.style.height = 100*wbscount+"px";
+        $('#t').height(100*wbscount+"px"); //设置名称条的高度
+		let actIndx = 0;
+		// <!-- if(wbsEventID == undefined){ -->
+		let wbsindex = 1;
+        for(let i = 0;i<PTree.getItemCount();i++){//生成任务名称条
+			//let items = PTree.getItemByIndex(i);
+			let item = null;
+			for (let s = 0; s < PTree.getItemCount(); s++){
+                let rel = PTree.getItemByIndex(s);
+                if (rel.getProperty("id") == sortList[i]){
+                    item = rel;
+                }
+            }
+            let type = item.getProperty("type","");
+            let name = item.getProperty("name","");
+			let wbsID = item.getProperty("id","");
+            if(type=="wbs"){
+                $('#t').append(`<div id="${wbsID}" value="${wbsindex++}" style="vertical-align: middle; height: 100px;width: 200px; text-align: center; border:1px solid #000;"><span style="line-height: 100px;">${name}</span></div>`);
+            }else{
+				if(wbsEventID==undefined){
+					$('#select2').append(`<option value = "${item.getProperty("id","")}">${item.getProperty("name","无名称")}</option>`);
+					$('#select2').selectpicker('refresh');
+				}
+			}
+        }
+		// <!-- }else{ -->
+		// 	<!-- for(let i = 0;i<wbsIdList.length;i++){//生成任务名称条 -->
+		// 		<!-- let item = PTree.getItemsByXPath(`//Item[@id='${wbsIdList[i]}']`) -->
+		// 		<!-- let type = item.getProperty("type",""); -->
+		// 		<!-- let name = item.getProperty("name",""); -->
+		// 		<!-- let wbsID = item.getProperty("id",""); -->
+		// 		<!-- $('#t').append(`<div id="${wbsID}" value="${i+1}" style="vertical-align: middle; height: 98px;width: 200px; text-align: center; border:1px solid #000;"><span>${name}</span></div>`); -->
+		// 	<!-- } -->
+		// <!-- } -->
+		
+		
+		let projectDay = dayjs(date_due_sched).diff(date_start_sched, 'day');
+		let projectMonth = dayjs(date_due_sched).diff(date_start_sched, 'month');
+		let projectYear = dayjs(date_due_sched).diff(date_start_sched, 'year');
+		let startYear = dayjs(date_start_sched).year(); //开始年
+		let endYear = dayjs(date_due_sched).year(); //结束年
+		let allYear = endYear - startYear +1; //总年数
+		$('#h').width(600*allYear+"px");
+		for(let i = 0;i<allYear;i++){//生成时间条
+			letNow = startYear+i;
+			$('#yearid').append(`<div id="${letNow}" value="${i+1}" style="vertical-align: middle; height: 30px;width: 600px; text-align: center; border:1px solid #000;"><span>${letNow}年</span></div>`);
+			if((letNow%4==0 && letNow%100!=0)||(letNow%400==0)){//闰年处理
+				for(let j = 0;j<12;j++){
+					$('#monthid').append(`<div id="${letNow}_${j+1}_run" value="${j+1}" style="vertical-align: middle; height: 30px;width: 50px; text-align: center; border-right:1px solid #000;border-left:1px solid #000;border-bottom:1px solid #000;"><span>${j+1}</span></div>`);
+				}
+			}else{
+				for(let j = 0;j<12;j++){
+					$('#monthid').append(`<div id="${letNow}_${j+1}_pin" value="${j+1}" style="vertical-align: middle; height: 30px;width: 50px; text-align: center; border-right:1px solid #000;border-left:1px solid #000;border-bottom:1px solid #000;"><span>${j+1}</span></div>`);
+				}
+			}
+		}
+		
+		$('#m').height(100*wbscount+"px"); //设置画布高度
+		$('#m').width(600*allYear+"px"); //设置画布宽度
+		//若时间宽度小于预置宽度，缩小至当前时间宽度
+		if($('#mv').width()>=600*allYear){
+			$('#mv').width("1400px");
+			if(allYear == 1){
+				$('#mv').width("600px");
+			}else if(allYear == 2){
+				$('#mv').width("1200px");
+			}
+		}else{
+			$('#mv').width("1400px");
+		}
+		if(700>=100*wbscount){
+			$('#mv').height(100*wbscount+"px");
+		}else{
+			$('#mv').height("700px");
+		}
+		//画出activity2
+		if(wbsEventID == undefined){
+		for(let z = 0;z<PTree.getItemCount();z++){
+		
+            let item2 = PTree.getItemByIndex(z);
+            let type2 = item2.getProperty("type","");  //act或wbs
+            let name2 = item2.getProperty("name",""); 
+			let actSource_id = item2.getProperty("source_id",""); //soource_id（wbs的related_id）
+			let actTime = item2.getProperty("date_due_sched",""); //结束时间
+			
+			let actStartTime = item2.getProperty("date_start_sched",""); //开始时间
+			let imageName = item2.getProperty("dpt_image_type","3"); //图片名称
+			let imageType = item2.getProperty("df_type",""); //图片类型
+			if(imageName == ""){
+				imageName = "3";
+			}
+			
+			let startYear = dayjs(actStartTime).year(); //年
+			let startMonth = actStartTime.split('/')[0]; //月
+			let startday = actStartTime.split('/')[1]; //日
+			let startMonth2 = startMonth.toString().length==1?"0"+startMonth.toString():startMonth.toString();
+			let startday2 = startday.toString().length==1?"0"+startday.toString():startday.toString();
+			
+			
+			// <!-- var actDate = new Date(actTime); -->
+			let nowYear = dayjs(actTime).year(); //年
+			let nowMonth = actTime.split('/')[0]; //月
+			let nowday = actTime.split('/')[1]; //日
+			let nowMonth2 = nowMonth.toString().length==1?"0"+nowMonth.toString():nowMonth.toString();
+			let nowday2 = nowday.toString().length==1?"0"+nowday.toString():nowday.toString();
+            if(type2=="act"){
+				let actValue = document.getElementById(`${actSource_id}`).getAttribute('value'); //第value个div（wbsName）
+				// <!-- let relatedItem = PTree.getProperty -->
+				//区分名称的横向和纵向显示,获取同一个wbs_event的任务，判断其相差的时间，进而决定名称的显示方向
+				let relatedObj = null;
+				let relatedArray = [];
+				for(let i = 0;i<PTree.getItemCount();i++){
+					// <!-- console.log(i); -->
+					relatedObj = {  
+						source_id: null,
+						id: null,
+						type: null,
+						startTime: null,
+						endTime: null,
+						startRelMonth: null,
+						endRelMonth: null
+					}
+					let itemOne = PTree.getItemByIndex(i);
+					if(itemOne.getProperty("source_id")==actSource_id && itemOne.getProperty("id")!= item2.getProperty("id")){
+						relatedObj.source_id = itemOne.getProperty("source_id");
+						relatedObj.id = itemOne.getProperty("id");
+						relatedObj.type = itemOne.getProperty("type");
+						relatedObj.startTime = itemOne.getProperty("date_start_sched");
+						relatedObj.endTime = itemOne.getProperty("date_due_sched");
+						relatedObj.startRelMonth = itemOne.getProperty("date_start_sched").split('/')[0];
+						relatedObj.endRelMonth = itemOne.getProperty("date_due_sched").split('/')[0];
+						relatedArray.push(relatedObj);
+					}
+				}
+				let actHeight = $(`#${actSource_id}`).height()+2; //div的高度
+				let y = actValue*actHeight-actHeight/2 //y坐标
+				let w = 20;//矩形的宽
+				let h = 10;//矩形的高
+				let x = 0;//结束日期坐标
+				let x2 = 0;//开始日期坐标
+				//闰年处理
+				if((nowYear%4==0 && nowYear%100!=0)||(nowYear%400==0)){
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth = $(`#${nowYear}`).width();
+						let yearValue = document.getElementById(`${nowYear}`).getAttribute('value');
+						let monthWidth = $(`#${nowYear}_${nowMonth}_run`).width();
+						let monthValue = document.getElementById(`${nowYear}_${nowMonth}_run`).getAttribute('value');
+						
+						x = (yearWidth+2)*(yearValue-1) + (monthWidth+2)*(monthValue-1)+(monthWidth+2)/30*nowday-5;
+					// <!-- } -->
+				}else{
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth2 = $(`#${nowYear}`).width();
+						let yearValue2 = document.getElementById(`${nowYear}`).getAttribute('value');
+						let monthWidth2 = $(`#${nowYear}_${nowMonth}_pin`).width();
+						let monthValue2 = document.getElementById(`${nowYear}_${nowMonth}_pin`).getAttribute('value');
+						
+						x = (yearWidth2+2)*(yearValue2-1) + (monthWidth2+2)*(monthValue2-1)+(monthWidth2+2)/30*nowday-5;
+					// <!-- } -->
+				}
+				if((startYear%4==0 && startYear%100!=0)||(startYear%400==0)){
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth = $(`#${startYear}`).width();
+						let yearValue = document.getElementById(`${startYear}`).getAttribute('value');
+						let monthWidth = $(`#${startYear}_${startMonth}_run`).width();
+						let monthValue = document.getElementById(`${startYear}_${startMonth}_run`).getAttribute('value');
+						
+						x2 = (yearWidth+2)*(yearValue-1) + (monthWidth+2)*(monthValue-1)+(monthWidth+2)/30*startday-5;
+					// <!-- } -->
+				}else{
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth2 = $(`#${startYear}`).width();
+						let yearValue2 = document.getElementById(`${startYear}`).getAttribute('value');
+						let monthWidth2 = $(`#${startYear}_${startMonth}_pin`).width();
+						let monthValue2 = document.getElementById(`${startYear}_${startMonth}_pin`).getAttribute('value');
+						
+						x2 = (yearWidth2+2)*(yearValue2-1) + (monthWidth2+2)*(monthValue2-1)+(monthWidth2+2)/30*startday-5;
+					// <!-- } -->
+				}
+				
+                
+				
+				if(imageType == "长"){
+				    let is_tilt = 0;
+					for(let i = 0 ;i<relatedArray.length;i++){
+						if(Math.abs((new Date(relatedArray[i].startTime).getTime()-new Date(actStartTime).getTime())/(24*3600*1000))<=60){
+							is_tilt = -45;
+						}
+					}
+					let longw = x-x2<imageWidth?imageWidth:x-x2;
+					let longx = x-x2<imageWidth?x:x2;
+					//名称
+					var text = draw
+					.text(`${name2}`)
+					.font({
+						size: textSize,
+					})
+					.move(longx,y-imageWidth)
+					.attr({'id':`${z}name`})
+					.rotate(is_tilt,longx,y-imageWidth)
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+	
+					//图片
+					
+					var group = draw
+					.group()
+					.attr({'vector-effect': 'non-scaling-stroke'});
+					
+					
+					var image = draw
+					.image(`image/${imageName}.svg`,longw,imageWidth)
+					.move(longx,y)
+					.attr({ 'preserveAspectRatio': 'none','vector-effect': 'non-scaling-stroke','id':`${z}image`,'value':`${longw}`,'onclick':'selectTimeEvent(this)','background':'url(image/1.svg)'})
+					.stroke({
+						width: 1,
+						color: 'blue'
+					}).size(longw, imageWidth);
+					
+					group.add(image);
+					
+					
+					//日期
+					var date = draw
+					.text(`${nowYear}.${nowMonth2}.${nowday2}`)
+					.font({
+						size: textSize,
+					})
+					.move(longx,y+imageWidth)
+					.attr({'id':`${z}date`})
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+				}else{
+					let is_tilt = 0;
+					for(let i = 0 ;i<relatedArray.length;i++){
+						if(Math.abs((new Date(relatedArray[i].endTime).getTime()-new Date(actTime).getTime())/(24*3600*1000))<=60){
+							is_tilt = -45;
+						}
+					}
+				
+					//名称
+					var text = draw
+					.text(`${name2}`)
+					.font({
+						size: textSize,
+					})
+					.move(x,y-imageWidth)
+					.attr({'id':`${z}name`})
+					.rotate(is_tilt,x,y-imageWidth)
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+					
+					//图片
+					var image = draw
+					.image(`image/${imageName}.svg`,imageWidth,imageWidth)
+					.move(x,y)
+					.attr({'id':`${z}image`,'onclick':'selectTimeEvent(this)'})
+					.stroke({
+						width: 1,
+						color: 'blue'
+					}).size(imageWidth, imageWidth);
+					
+					
+					//日期
+					var date = draw
+					.text(`${nowYear}.${nowMonth2}.${nowday2}`)
+					.font({
+						size: textSize,
+					})
+					.move(x,y+imageWidth)
+					.attr({'id':`${z}date`})
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+				}
+				
+				
+            }
+        }
+		}else{
+		
+		for(let k = 0;k<wbsIdList.length;k++){
+            //let item2 = PTree.getItemsByXPath(`//Item[@id='${wbsIdList[z]}']`)
+			for(let z = 0;z<PTree.getItemCount();z++){
+			let item2 = PTree.getItemByIndex(z);
+            let type2 = item2.getProperty("type","");  //act或wbs
+            let name2 = item2.getProperty("name",""); 
+			let actSource_id = item2.getProperty("source_id",""); //source_id（wbs的related_id）
+			let actID = item2.getProperty("id",""); //
+			let actTime = item2.getProperty("date_due_sched",""); //时间
+			
+			let actStartTime = item2.getProperty("date_start_sched",""); //开始时间
+			let imageName = item2.getProperty("dpt_image_type","3"); //图片名称
+			if(imageName == ""){
+				imageName = "3";
+			}
+			let imageType = item2.getProperty("df_type",""); //图片类型
+			
+			let startYear = dayjs(actStartTime).year(); //年
+			let startMonth = actStartTime.split('/')[0]; //月
+			let startday = actStartTime.split('/')[1]; //日
+			let startMonth2 = startMonth.toString().length==1?"0"+startMonth.toString():startMonth.toString();
+			let startday2 = startday.toString().length==1?"0"+startday.toString():startday.toString();
+			
+			
+			// <!-- var actDate = new Date(actTime); -->
+			let nowYear = dayjs(actTime).year(); //年
+			let nowMonth = actTime.split('/')[0]; //月
+			let nowday = actTime.split('/')[1]; //日
+			let nowMonth2 = nowMonth.toString().length==1?"0"+nowMonth.toString():nowMonth.toString();
+			let nowday2 = nowday.toString().length==1?"0"+nowday.toString():nowday.toString();
+            if(type2=="act" && actID==wbsIdList[k] ){
+				let actValue = document.getElementById(`${actSource_id}`).getAttribute('value'); //第value个div（wbsName）
+				//区分名称的横向和纵向显示,获取同一个wbs_event的任务，判断其相差的时间，进而决定名称的显示方向
+				let relatedObj = null;
+				let relatedArray = [];
+				for(let i = 0;i<PTree.getItemCount();i++){
+					// <!-- console.log(i); -->
+					relatedObj = {  
+						source_id: null,
+						id: null,
+						type: null,
+						startTime: null,
+						endTime: null,
+						startRelMonth: null,
+						endRelMonth: null
+					}
+					let itemOne = PTree.getItemByIndex(i);
+					if(itemOne.getProperty("source_id")==actSource_id && itemOne.getProperty("id")!= item2.getProperty("id") && wbsIdList.indexOf(itemOne.getProperty("id"))!=-1){
+						relatedObj.source_id = itemOne.getProperty("source_id");
+						relatedObj.id = itemOne.getProperty("id");
+						relatedObj.type = itemOne.getProperty("type");
+						relatedObj.startTime = itemOne.getProperty("date_start_sched");
+						relatedObj.endTime = itemOne.getProperty("date_due_sched");
+						relatedObj.startRelMonth = itemOne.getProperty("date_start_sched").split('/')[0];
+						relatedObj.endRelMonth = itemOne.getProperty("date_due_sched").split('/')[0];
+						relatedArray.push(relatedObj);
+					}
+				}
+				let actHeight = $(`#${actSource_id}`).height()+2; //div的高度
+				let y = actValue*actHeight-actHeight/2 //y坐标
+				let w = 20;//矩形的宽
+				let h = 10;//矩形的高
+				let x = 0;
+				let x2 = 0;
+				//闰年处理
+				if((nowYear%4==0 && nowYear%100!=0)||(nowYear%400==0)){
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth = $(`#${nowYear}`).width();
+						let yearValue = document.getElementById(`${nowYear}`).getAttribute('value');
+						let monthWidth = $(`#${nowYear}_${nowMonth}_run`).width();
+						let monthValue = document.getElementById(`${nowYear}_${nowMonth}_run`).getAttribute('value');
+						
+						x = (yearWidth+2)*(yearValue-1) + (monthWidth+2)*(monthValue-1)+(monthWidth+2)/30*nowday-5;
+					// <!-- } -->
+				}else{
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth2 = $(`#${nowYear}`).width();
+						let yearValue2 = document.getElementById(`${nowYear}`).getAttribute('value');
+						let monthWidth2 = $(`#${nowYear}_${nowMonth}_pin`).width();
+						let monthValue2 = document.getElementById(`${nowYear}_${nowMonth}_pin`).getAttribute('value');
+						
+						x = (yearWidth2+2)*(yearValue2-1) + (monthWidth2+2)*(monthValue2-1)+(monthWidth2+2)/30*nowday-5;
+					// <!-- } -->
+				}
+				if((startYear%4==0 && startYear%100!=0)||(startYear%400==0)){
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth = $(`#${startYear}`).width();
+						let yearValue = document.getElementById(`${startYear}`).getAttribute('value');
+						let monthWidth = $(`#${startYear}_${startMonth}_run`).width();
+						let monthValue = document.getElementById(`${startYear}_${startMonth}_run`).getAttribute('value');
+						
+						x2 = (yearWidth+2)*(yearValue-1) + (monthWidth+2)*(monthValue-1)+(monthWidth+2)/30*startday-5;
+					// <!-- } -->
+				}else{
+					// <!-- for(let j = 0;j<12;j++){ -->
+						let yearWidth2 = $(`#${startYear}`).width();
+						let yearValue2 = document.getElementById(`${startYear}`).getAttribute('value');
+						let monthWidth2 = $(`#${startYear}_${startMonth}_pin`).width();
+						let monthValue2 = document.getElementById(`${startYear}_${startMonth}_pin`).getAttribute('value');
+						
+						x2 = (yearWidth2+2)*(yearValue2-1) + (monthWidth2+2)*(monthValue2-1)+(monthWidth2+2)/30*startday-5;
+					// <!-- } -->
+				}
+				
+                if(imageType == "长"){
+					let is_tilt = 0;
+					for(let i = 0 ;i<relatedArray.length;i++){
+						if(Math.abs((new Date(relatedArray[i].startTime).getTime()-new Date(actStartTime).getTime())/(24*3600*1000))<=60){
+							is_tilt = -45;
+						}
+					}
+					let longw = x-x2<imageWidth?imageWidth:x-x2;
+					let longx = x-x2<imageWidth?x:x2;
+					//名称
+					var text = draw
+					.text(`${name2}`)
+					.font({
+						size: textSize,
+					})
+					.move(longx,y-imageWidth)
+					.attr({'id':`${z}name`})
+					.rotate(is_tilt,longx,y-imageWidth)
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+	
+					//图片
+					
+					var group = draw
+					.group()
+					.attr({'vector-effect': 'non-scaling-stroke'});
+					
+					var image = draw
+					.image(`image/${imageName}.svg`,longw,imageWidth)
+					.move(longx,y)
+					.attr({ 'preserveAspectRatio': 'none','vector-effect': 'non-scaling-stroke','id':`${z}image`,'value':`${longw}`,'onclick':'selectTimeEvent(this)'})
+					.stroke({
+						width: 1,
+						color: 'blue'
+					}).size(longw, imageWidth);
+					
+					group.add(image);
+					
+					//日期
+					var date = draw
+					.text(`${nowYear}.${nowMonth2}.${nowday2}`)
+					.font({
+						size: textSize,
+					})
+					.move(longx,y+imageWidth)
+					.attr({'id':`${z}date`})
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+				}else{
+					let is_tilt = 0;
+					for(let i = 0 ;i<relatedArray.length;i++){
+						if(Math.abs((new Date(relatedArray[i].endTime).getTime()-new Date(actTime).getTime())/(24*3600*1000))<=60){
+							is_tilt = -45;
+						}
+					}
+					//名称
+					var text = draw
+					.text(`${name2}`)
+					.font({
+						size: textSize,
+					})
+					.move(x,y-imageWidth)
+					.attr({'id':`${z}name`})
+					.rotate(is_tilt,x,y-imageWidth)
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+					
+					//图片
+					var image = draw
+					.image(`image/${imageName}.svg`,imageWidth,imageWidth)
+					.move(x,y)
+					.attr({'id':`${z}image`,'onclick':'selectTimeEvent(this)'})
+					.stroke({
+						width: 1,
+						color: 'blue'
+					}).size(imageWidth, imageWidth);
+					
+					
+					//日期
+					var date = draw
+					.text(`${nowYear}.${nowMonth2}.${nowday2}`)
+					.font({
+						size: textSize,
+					})
+					.move(x,y+imageWidth)
+					.attr({'id':`${z}date`})
+					.fill("#ffffff")
+					.stroke({ width: 0.6, color: "#000" });
+				}
+            }
+        }
+		}
+		}		
+		}
+		//初始化
+		init();
+        $(function () {
+        $("#mv").mouseover(function () {
+            $(this).on("scroll", function () {
+                console.log(1)
+                $("#tv").scrollTop($(this).scrollTop()); // 纵向滚动条
+                $("#hv").scrollLeft($(this).scrollLeft()); // 横向滚动条
+            });
+        }).mouseout(function () {
+            $(this).unbind("scroll");
+        });
+    });
+	
+	
+	//辅助线
+	var box = document.querySelector('.box')
+	
+	// 绑定鼠标按下对象
+	box.onmousedown = function() {
+	
+    // 获取鼠标在div上按下的位置
+    var e = window.event;  //接收事件对象
+	// 获取鼠标在当前事件源的位置
+    var x1 = e.offsetX
+    var y1 = e.offsetY
+    
+    // 绑定移动事件
+    document.onmousemove = function() {
+    
+        // 获取鼠标在浏览器中的位置 - 每个事件都有自己独特的事件对象
+        var e = window.event;
+        var x2 = e.clientX
+        var y2 = e.clientY
+        
+        // 计算left和top
+        var l = x2 - x1
+        var t = y2 - y1
+        
+        // 设置不能超出左上角和右上角
+        if(l < 0) {
+            l = 0
+        }
+        if(t < 0) {
+            t = 0
+        }
+          // 设置left和top的最大值 不能超过事件源本身
+        if(t > document.documentElement.clientHeight - box.offsetHeight) {
+            t = document.documentElement.clientHeight - box.offsetHeight
+        }
+        if(l > document.documentElement.clientWidth - box.offsetWidth) {
+            l = document.documentElement.clientWidth - box.offsetWidth
+        }
+
+        // 设置div的left和top
+        box.style.left = l + 'px'
+        box.style.top = t + 'px'
+    }
+}
+// 拖拽行为一定要记得解绑mousemove事件
+window.onmouseup = function() {
+    document.onmousemove = null
+}
+    </script>
+  </body>
+</html>
